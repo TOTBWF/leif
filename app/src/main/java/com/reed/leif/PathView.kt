@@ -34,7 +34,7 @@ class PathView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
     init {
         paint.color = ContextCompat.getColor(context!!, R.color.red)
-//        paint.style = Paint.Style.STROKE
+        paint.style = Paint.Style.STROKE
         paint.strokeWidth = strokeWidth
 //        transformation.pre(2f, 2f)
         this.setOnTouchListener(::onTouch)
@@ -42,15 +42,39 @@ class PathView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
     override fun draw(canvas: Canvas?) {
         super.draw(canvas)
-        val buff = FloatArray(locations.size*2)
-//        canvas?.drawCircle(center.x, center.y, 15f, paint)
-        locations.map(::mercator).forEachIndexed{ i, p ->
-            buff[i*2] = p.x
-            buff[i*2 + 1] = p.y
-        }
-        transformation.mapPoints(buff)
-        for(i in buff.indices step 2) {
-            canvas?.drawCircle(buff[i], buff[i+1], 10f, paint)
+        val linePoints = pointsToLines(locations.map(::mercator))
+        transformation.mapPoints(linePoints)
+        canvas?.drawLines(linePoints, paint)
+    }
+
+    fun pointsToLines(points: List<PointF>): FloatArray {
+        return when (points.size) {
+            0 -> floatArrayOf()
+            1 -> {
+                val p = points.first()
+                floatArrayOf(p.x, p.y, p.x, p.y)
+            }
+            2 -> {
+                val p0 = points.first()
+                val p1 = points.last()
+                floatArrayOf(p0.x, p0.y, p1.x, p1.y)
+            }
+            else -> {
+                val linePoints = FloatArray((points.size - 1)*4)
+                val fst = points.first()
+                val last = points.last()
+                linePoints[0] = fst.x
+                linePoints[1] = fst.y
+                linePoints[linePoints.size - 2] = last.x
+                linePoints[linePoints.size - 1] = last.y
+                points.drop(1).dropLast(1).forEachIndexed{ i, p ->
+                    linePoints[i*4 + 2]  = p.x
+                    linePoints[i*4 + 3]  = p.y
+                    linePoints[i*4 + 4]  = p.x
+                    linePoints[i*4 + 5]  = p.y
+                }
+                linePoints
+            }
         }
     }
 
