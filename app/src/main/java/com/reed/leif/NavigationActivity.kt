@@ -27,8 +27,6 @@ class NavigationActivity : AppCompatActivity() {
         pathView.center = intent.getParcelableExtra(CALIBRATION_LOCATION)
     }
 
-
-
     private fun setupLocationListener() {
         val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
 

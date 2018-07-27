@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".CalibrationActivity">
 
     <ImageView
         android:id="@+id/mapView"
@@ -12,13 +12,12 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@color/colorAccent" />
 
     <Button
-        android:id="@+id/complete_calibration_button"
+        android:id="@+id/calibrationButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
@@ -26,10 +25,10 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:onClick="completeCalibration"
         />
     <com.reed.leif.DotView
         android:id="@+id/dot"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
 </android.support.constraint.ConstraintLayout>
