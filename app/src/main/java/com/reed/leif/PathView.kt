@@ -96,10 +96,6 @@ class PathView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
                     } else {
                         transformation.postRotate(-rotate.toFloat(), center.x, center.y)
                     }
-                    // Show where (0,0) gets mapped to
-//                    val tp = floatArrayOf(0f, 0f)
-//                    transformation.mapPoints(tp)
-//                    Log.d("[Leif]", "Origin: x: " + tp[0] + " y: " + tp[1])
                     invalidate()
                 }
             }
@@ -129,9 +125,6 @@ class PathView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
             // Ensure that our coordinate system starts a the origin
             val p = mercator(l)
             origin = PointF(p.x, p.y)
-            Log.d("[Leif]", "Point x: " + p.x + " y:" + p.y)
-            Log.d("[Leif]", "Center x: " + center.x + " y:" + center.y)
-            Log.d("[Leif]", "Origin x: " + origin?.x + " y:" + origin?.y)
             // Ensure that the origin gets translated to the calibration center
             transformation.postTranslate(center.x, center.y)
             transformation.postScale(scale, scale, center.x, center.y)
