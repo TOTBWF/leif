@@ -132,7 +132,6 @@ class PathView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
         val p = mercator(l)
         val tp = floatArrayOf(p.x, p.y)
         transformation.mapPoints(tp)
-        Log.d("[Leif]", "Lat: " + l.latitude + " Lon: " + l.longitude)
         Log.d("[Leif]", "original x: " + p.x + " y: " + p.y)
         Log.d("[Leif]", "transformed x: " + tp[0] + " y: " + tp[1])
         locations.add(l)

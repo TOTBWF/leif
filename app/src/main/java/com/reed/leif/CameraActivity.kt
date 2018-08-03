@@ -20,6 +20,9 @@ import android.util.Size
 import android.view.MotionEvent
 import android.view.View
 import com.google.android.cameraview.CameraView
+import com.reed.leif.model.NavigationDBHelper
+import com.reed.leif.model.SessionContract
+import com.reed.leif.model.SessionContract.SessionEntry
 import kotlinx.android.synthetic.main.activity_camera.*
 import java.io.File
 import java.lang.Long.signum
@@ -30,12 +33,14 @@ class CameraActivity : AppCompatActivity() {
 
     private var backgroundThread : HandlerThread? = null
     private var backroundHander : Handler? = null
+    private lateinit var dbHelper: NavigationDBHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_camera)
         cameraButton.setOnClickListener { _ -> cameraView.takePicture() }
         cameraView.addCallback(cameraCallback)
+        dbHelper = NavigationDBHelper(this)
     }
 
     override fun onResume() {
@@ -51,10 +56,11 @@ class CameraActivity : AppCompatActivity() {
         stopBackgroundThead()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onStop() {
+        super.onStop()
         cameraView.stop()
         stopBackgroundThead()
+        dbHelper.close()
     }
 
     private fun requestPermission() {
@@ -102,9 +108,10 @@ class CameraActivity : AppCompatActivity() {
         }
     }
 
-    private fun launchCalibrationActivity(photoPath: String) {
+    private fun launchCalibrationActivity(imagePath: String) {
+        val sessionId = dbHelper.createSession(imagePath)
         val intent = Intent(this, CalibrationActivity::class.java)
-        intent.putExtra(PHOTO_PATH, photoPath)
+        intent.putExtra(SESSION_ID, sessionId)
         startActivity(intent)
     }
 
