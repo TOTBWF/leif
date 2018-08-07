@@ -1,4 +1,4 @@
-package com.reed.leif
+package com.reed.leif.util
 
 const val REQUEST_IMAGE_CAPTURE = 1
 const val REQUEST_LOCATION_ACCESS = 2
@@ -10,3 +10,5 @@ const val LOCATION_UPDATE_DATA = "LOCATION_UPDATE_DATA"
 const val LOCATION_NOTIFICATION_ID = 1
 const val LOCATION_NOTIFICATION_CHANNEL_ID = "channel_01"
 const val TAG = "[Leif]"
+
+const val DATABASE_NAME = "leif-db"

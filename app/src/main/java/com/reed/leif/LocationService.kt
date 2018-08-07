@@ -5,34 +5,30 @@ import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.database.sqlite.SQLiteDatabase
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Binder
 import android.os.Bundle
 import android.os.IBinder
-import android.os.Parcelable
 import android.support.v4.app.NotificationCompat
 import android.support.v4.content.ContextCompat
-import android.support.v4.content.LocalBroadcastManager
 import android.util.Log
-import com.reed.leif.model.LocationContract
-import com.reed.leif.model.LocationContract.LocationEntry
-import com.reed.leif.model.NavigationDBHelper
-import java.util.*
+import com.reed.leif.util.InjectorUtils
+import com.reed.leif.util.LOCATION_NOTIFICATION_CHANNEL_ID
+import com.reed.leif.util.LOCATION_NOTIFICATION_ID
+import com.reed.leif.util.TAG
+import com.reed.leif.viewmodel.model.NavigationViewModel
 
 class LocationService : Service() {
 
     private val binder = LocalBinder()
-    private val broadcastManager = LocalBroadcastManager.getInstance(this)
     private lateinit var locationManager : LocationManager
-    private lateinit var dbHelper: NavigationDBHelper
-    private var sessionId : Long = -1
+    private var navigationViewModel: NavigationViewModel? = null
     private val locationListener = object : LocationListener {
         override fun onLocationChanged(l: Location) {
             Log.d("[Leif]", "Lat: " + l.latitude + " Lon: " + l.longitude)
-            recordLocation(l)
+            navigationViewModel?.addLocation(l)
         }
 
         override fun onStatusChanged(p0: String?, p1: Int, p2: Bundle?) {
@@ -48,11 +44,9 @@ class LocationService : Service() {
 
     override fun onCreate() {
         locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        dbHelper = NavigationDBHelper(this)
     }
 
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        sessionId = intent.getLongExtra(SESSION_ID, -1)
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         return START_STICKY
     }
 
@@ -76,9 +70,11 @@ class LocationService : Service() {
         return true
     }
 
-    fun requestLocationUpdates() {
+    fun requestLocationUpdates(sessionId: Long) {
         when (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
             PackageManager.PERMISSION_GRANTED -> {
+                Log.d(TAG, "Starting location service for session $sessionId")
+                navigationViewModel = InjectorUtils.getNavigationViewModel(this, sessionId)
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0L, 0f, locationListener)
                 startService(Intent(applicationContext, LocationService::class.java))
             }
@@ -102,14 +98,6 @@ class LocationService : Service() {
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentIntent(pendingIntent)
         return builder.build()
-    }
-
-
-    private fun recordLocation(l : Location) {
-        val intent = Intent(LOCATION_UPDATE)
-        intent.putExtra(LOCATION_UPDATE_DATA, l as Parcelable)
-        broadcastManager.sendBroadcast(intent)
-        dbHelper.insertLocation(sessionId, l)
     }
 
     inner class LocalBinder : Binder() {

@@ -1,4 +1,4 @@
-package com.reed.leif
+package com.reed.leif.view
 
 import android.content.Context
 import android.graphics.Canvas
@@ -7,6 +7,7 @@ import android.graphics.PointF
 import android.support.v4.content.ContextCompat
 import android.view.View
 import android.util.AttributeSet
+import com.reed.leif.R
 
 /**
  * Used to display the dot overlay during the calibration screen
